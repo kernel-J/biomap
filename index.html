@@ -1,0 +1,142 @@
+<!doctype  html>
+<html>
+    <head>
+        <title>Biomap</title>
+
+        <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="vis-4.20.0/dist/vis.js"></script>
+        <link href="vis-4.20.0/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+        <link href="css/style.css" rel="stylesheet" type="text/css" />
+
+    </head>
+
+    <body>
+
+        <h1>
+        BIOMAP
+        </h1>
+
+        <div id="mynetwork"></div>
+        <pre id="eventSpan"></pre>
+
+    <script type="text/javascript">
+    var len = undefined;
+
+    var nodes = [{id: 0, title: "Self", group: 0},
+        {id: 1, title: "Refection", group: 1},
+        {id: 2, title: "Self-Portrait 1", group: 1},
+        {id: 3, title: "Self-Portrait 2", group: 1},
+        {id: 4, title: "Resilience", group: 1},
+        {id: 5, title: "Characteristics", group: 2},
+        {id: 6, title: "Leader's Kics", group: 2},
+        {id: 7, title: "Perceived", group: 2},
+        {id: 8, title: "Self", group: 2},
+        {id: 9, title: "Team", group: 3},
+        {id: 10, title: "Preferred Role: Bystander / Follower", group: 3},
+        {id: 11, title: "Vision", group: 4},
+        {id: 12, title: "Sense of Purpose", group: 4},
+        {id: 13, title: "Personal Objectives", group: 4},
+        {id: 15, title: "Leadership Challenge", group: 4},
+        {id: 16, title: "Communication Challenge", group: 4},
+        {id: 17, title: "Creativity", group: 5},
+        {id: 18, title: "Quotes", group: 5},
+        {id: 19, title: "Poems", group: 5},
+        {id: 20, title: "Keywords", group: 5},
+        {id: 21, title: "Metaphors", group: 5},
+        {id: 22, title: "Moments", group: 3},
+        {id: 23, title: "Painting", group: 5},
+        {id: 24, title: "Sports", group: 3}
+    ];
+    var edges = [{from: 1, to: 0},
+        {from: 2, to: 1},
+        {from: 3, to: 1},
+        {from: 4, to: 1},
+        {from: 5, to: 0},
+        {from: 5, to: 6},
+        {from: 5, to: 7},
+        {from: 5, to: 8},
+        {from: 9, to: 0},
+        {from: 9, to: 10},
+        {from: 9, to: 22},
+        {from: 9, to: 24},
+        {from: 11, to: 0},
+        {from: 11, to: 12},
+        {from: 11, to: 13},
+        {from: 13, to: 15},
+        {from: 13, to: 16},
+        {from: 17, to: 0},
+        {from: 17, to: 18},
+        {from: 17, to: 19},
+        {from: 17, to: 20},
+        {from: 17, to: 21},
+        {from: 17, to: 23}
+
+    ]
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {
+        nodes: {
+            shape: 'dot',
+            size: 30,
+            font: {
+                size: 20
+            },
+            borderWidth: 2,
+            shadow:true
+        },
+        edges: {
+            width: 2,
+            shadow:true,
+            length: 4
+        },
+        interaction: {
+            tooltipDelay: 300,
+            hover: true
+        }
+    };
+    network = new vis.Network(container, data, options);
+
+    network.on("click", function (params) {
+        var num = this.getNodeAt(params.pointer.DOM);
+        params.event = "[original event]";
+
+        $(function(){               
+                $('#mynetwork').click(function(e){
+                    e.preventDefault();
+                    console.log('select_link clicked');
+
+                    var number = {};
+                    number.num = num;
+                    console.log(number);
+                    
+                    $.ajax({
+                        type: 'POST',
+                        data: JSON.stringify(number),
+                        contentType: 'application/json',
+                        url: 'http://localhost:8081/endpoint',
+                        complete: function() {
+                            console.log('transfer complete');
+                        },
+                        success: function(data) {
+                            console.log('success');
+                            console.log(JSON.stringify(data));
+                            window.location.href = data;
+                        },
+                        error: function() {
+                            console.log('Error');
+                        }
+                    });
+                });             
+            });
+        
+    });
+</script>
+
+
+    </body>
+</html>
